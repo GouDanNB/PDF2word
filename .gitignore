@@ -1,0 +1,10 @@
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+dist/
+build/
+*.spec
+*.docx
+!tests/fixtures/.gitkeep
+.DS_Store
