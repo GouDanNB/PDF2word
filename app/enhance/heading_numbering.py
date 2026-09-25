@@ -25,6 +25,7 @@ def ensure_heading_numbering(doc: DocumentObject) -> int:
     numbering = doc.part.numbering_part.element
     existing = _find_existing_heading_num_id(numbering)
     if existing is not None:
+        _link_heading_styles(doc, existing)
         return existing
 
     abstract_id = _next_abstract_num_id(numbering)

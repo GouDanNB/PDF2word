@@ -30,15 +30,16 @@ HEADING1_MIN_SIZE = 16
 HEADING2_MIN_SIZE = 14
 HEADING3_MIN_SIZE = 12
 
-# Keep PDF heading text/fonts as-is. Do NOT inject Word auto-numbers
-# (would create「第1章 + 第一章」duplicates and diverge from PDF outline).
-HEADING_AUTO_NUMBER = False
-HEADING_STRIP_PREFIX = False
+# Multilevel Word numbering for Heading 1–3 (insert/reorder auto-updates).
+# Do NOT rewrite title wording/fonts. Only numbering prefixes (第一章/1.1/（一）)
+# are handed to Word's list so「第1章 + 第一章」不会叠字。
+HEADING_AUTO_NUMBER = True
+HEADING_STRIP_PREFIX = True
 HEADING_NUM_ID_HINT = "pdf2word-heading-outline"
 HEADING_NUM_FMT = [
-    ("decimal", "第%1章 ", 1),
-    ("decimal", "%1.%2 ", 1),
-    ("decimal", "%1.%2.%3 ", 1),
+    ("decimal", "第%1章 ", 1),  # Heading 1
+    ("decimal", "%1.%2 ", 1),  # Heading 2
+    ("decimal", "%1.%2.%3 ", 1),  # Heading 3
 ]
 
 # Max length for Chinese-paren titles like「（一）职责」; longer → treat as body list

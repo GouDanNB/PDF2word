@@ -221,6 +221,7 @@ class MainWindow(QMainWindow):
         self._log(
             f"结构规则: 拆段 {stats.get('paragraphs_split', 0)}，"
             f"标题提升 {stats.get('headings_promoted', 0)}，"
+            f"自动编号 {stats.get('headings_numbered', 0)}，"
             f"碎段合并 {stats.get('fragments_merged', 0)}"
         )
         llm = result.llm_stats or {}
