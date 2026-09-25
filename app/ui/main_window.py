@@ -219,7 +219,8 @@ class MainWindow(QMainWindow):
         self.status.setText("完成")
         stats = result.structure_stats
         self._log(
-            f"结构规则: 标题提升 {stats.get('headings_promoted', 0)}，"
+            f"结构规则: 拆段 {stats.get('paragraphs_split', 0)}，"
+            f"标题提升 {stats.get('headings_promoted', 0)}，"
             f"碎段合并 {stats.get('fragments_merged', 0)}"
         )
         llm = result.llm_stats or {}
