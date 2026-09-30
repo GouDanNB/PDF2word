@@ -57,7 +57,7 @@ class ConversionOrchestrator:
             self.engine.convert(info.path, out, on_progress=progress)
 
             progress(75, "正在应用预案结构规则…")
-            structure_stats = self.fixer.apply(out)
+            structure_stats = self.fixer.apply(out, pdf_path=info.path)
 
             llm_stats: dict = {"skipped": True, "reason": "未启用"}
             if enable_llm:

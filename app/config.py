@@ -15,24 +15,35 @@ OLLAMA_MODEL = "qwen2.5:7b"
 OLLAMA_TIMEOUT_SEC = 60
 OLLAMA_MAX_CANDIDATES = 80
 
-# Structure heuristics for 应急预案（与 PDF 大纲对齐，避免把正文条目抬成标题）
+# Structure heuristics — ONLY line-leading 第X章 / X.Y / X.Y.Z
+# Numeric titles need "emphasis" (real bold or clearly larger than body);
+# also rejected if numbering conflicts with context.
 HEADING_PATTERNS = [
-    # 第X章 / 第X节
-    r"^第[一二三四五六七八九十百零\d]+[章节编部分]\s*.+",
-    # 1.1 / 1.1.1（至少含一级小数点，避免「1 正文」误识别）
-    r"^\d+(\.\d+){1,3}(?:\s+|(?=[\u4e00-\u9fff])).+",
-    # （一）短标题；（1）列表项不在此提升
-    r"^[（(][一二三四五六七八九十]+[）)]\s*.+",
+    r"^第[一二三四五六七八九十百零〇\d]+章",
+    r"^\d+\.\d+(?:\.\d+)?(?:\s+|(?=[\u4e00-\u9fff])|$)",
 ]
 
-# Font size thresholds (pt) used when promoting headings after pdf2docx
-HEADING1_MIN_SIZE = 16
-HEADING2_MIN_SIZE = 14
-HEADING3_MIN_SIZE = 12
+# Max sibling jump allowed (1.1 → 1.4 OK; 1.1 → 1.8 still OK if <= this)
+HEADING_MAX_SIBLING_JUMP = 5
+# pdf2docx often loses bold flags; larger-than-body size counts as emphasis
+HEADING_SIZE_ABOVE_BODY = 1.5  # pt
+# Fraction of non-space chars that must be bold to count the line as bold
+HEADING_BOLD_CHAR_RATIO = 0.5
+# Use PDF bookmarks / structure tags to assist heading promotion when present
+HEADING_USE_PDF_OUTLINE = True
+
+# pdf2docx often maps 首行缩进 as w:ind left=… (whole-paragraph indent).
+# Convert moderate left-only indents on body paragraphs to firstLine.
+BODY_INDENT_FIX = True
+# Standard Chinese body first-line indent ≈ 2 chars at 12pt (480 twips)
+BODY_FIRST_LINE_TWIPS = 480
+# Only rewrite left indents at or below this (skip deep block quotes / covers)
+BODY_LEFT_INDENT_MAX_TWIPS = 1000
+# Skip when left≈right (cover / centered block)
+BODY_INDENT_SYMMETRIC_MIN_TWIPS = 600
 
 # Multilevel Word numbering for Heading 1–3 (insert/reorder auto-updates).
-# Do NOT rewrite title wording/fonts. Only numbering prefixes (第一章/1.1/（一）)
-# are handed to Word's list so「第1章 + 第一章」不会叠字。
+# Strip only numbering prefixes (第一章/1.1/1.1.1); keep title wording + fonts.
 HEADING_AUTO_NUMBER = True
 HEADING_STRIP_PREFIX = True
 HEADING_NUM_ID_HINT = "pdf2word-heading-outline"
@@ -41,9 +52,6 @@ HEADING_NUM_FMT = [
     ("decimal", "%1.%2 ", 1),  # Heading 2
     ("decimal", "%1.%2.%3 ", 1),  # Heading 3
 ]
-
-# Max length for Chinese-paren titles like「（一）职责」; longer → treat as body list
-HEADING_CN_PAREN_MAX_LEN = 40
 
 # Project paths
 ROOT_DIR = Path(__file__).resolve().parent.parent
